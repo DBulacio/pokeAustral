@@ -1,21 +1,22 @@
 <template>
   <ion-content>
-    <ion-list>
+    <ion-title>PokeAustral app</ion-title>
+    <ion-list class="content">
       <ion-item v-for="(pokemon, index) in pokemons" :key="index">
         <ion-avatar slot="start">
           <img :src="pokemon.sprites.front_default" alt="avatar" style="width: 80px; height: 80px;"/>
         </ion-avatar>
-        <ion-card>
+        <ion-card class="card">
           <ion-card-header>
             <ion-card-title>{{ pokemon.name }}</ion-card-title>
-            <ion-card-subtitle>Experience: {{ pokemon.base_experience }}</ion-card-subtitle>
+            <ion-card-subtitle><b>Experience: </b>{{ pokemon.base_experience }}</ion-card-subtitle>
           </ion-card-header>
 
           <ion-card-content>
-            Weight: {{ pokemon.weight }}kg. Height: {{ pokemon.height }}cm.
+            <b>Weight:</b> {{ pokemon.weight }}kg. <b>Height:</b> {{ pokemon.height }}cm.
           </ion-card-content>
           <ion-card-content>
-            Abilities: {{ pokemon.abilities.map(ability => ability.name).join(', ') }}.
+            <b>Abilities:</b> {{ pokemon.abilities.map(ability => ability.name).join(', ') }}.
           </ion-card-content>
         </ion-card>
       </ion-item>
@@ -65,7 +66,7 @@ export default {
           });
           const abilities = await Promise.all(abilitiesPromises);
 
-          // Y convino la data del pokemon con sus habilidades ya fetcheadas
+          // Y combino la data del pokemon con sus habilidades ya fetcheadas
           return { ...pokemonData, abilities };
         });
 
@@ -94,3 +95,18 @@ export default {
   },
 };
 </script>
+
+<style>
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.card {
+  width: 500px;
+}
+ion-title {
+  font-size: 3rem;
+  margin: 1rem 0;
+}
+</style>
