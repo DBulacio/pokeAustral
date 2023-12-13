@@ -2,6 +2,9 @@
   <ion-content>
     <ion-list>
       <ion-item v-for="(pokemon, index) in pokemons" :key="index">
+        <ion-avatar slot="start">
+          <img :src="pokemon.sprites.front_default" alt="avatar" style="width: 80px; height: 80px;"/>
+        </ion-avatar>
         <ion-card>
           <ion-card-header>
             <ion-card-title>{{ pokemon.name }}</ion-card-title>
@@ -12,7 +15,7 @@
             Weight: {{ pokemon.weight }}kg. Height: {{ pokemon.height }}cm.
           </ion-card-content>
           <ion-card-content>
-            Abilities: .
+            Abilities: {{ pokemon.abilities.map(ability => ability.name).join(', ') }}.
           </ion-card-content>
         </ion-card>
       </ion-item>
@@ -53,7 +56,17 @@ export default {
 
         const pokemonDetailsPromises = data.results.map(async (result) => {
           const pokemonResponse = await fetch(result.url);
-          return await pokemonResponse.json();
+          const pokemonData = await pokemonResponse.json();
+
+          // Hago lo mismo con las abilities
+          const abilitiesPromises = pokemonData.abilities.map(async (ability) => {
+            const abilityResponse = await fetch(ability.ability.url);
+            return await abilityResponse.json();
+          });
+          const abilities = await Promise.all(abilitiesPromises);
+
+          // Y convino la data del pokemon con sus habilidades ya fetcheadas
+          return { ...pokemonData, abilities };
         });
 
         const pokemonDetails = await Promise.all(pokemonDetailsPromises);
