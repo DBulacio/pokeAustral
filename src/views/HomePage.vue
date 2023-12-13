@@ -2,10 +2,19 @@
   <ion-content>
     <ion-list>
       <ion-item v-for="(pokemon, index) in pokemons" :key="index">
-        <ion-avatar slot="start">
-          <img :src="'https://picsum.photos/80/80?random=' + index" alt="avatar" />
-        </ion-avatar>
-        <ion-label>{{ pokemon.name }}</ion-label>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>{{ pokemon.name }}</ion-card-title>
+            <ion-card-subtitle>Experience: {{ pokemon.base_experience }}</ion-card-subtitle>
+          </ion-card-header>
+
+          <ion-card-content>
+            Weight: {{ pokemon.weight }}kg. Height: {{ pokemon.height }}cm.
+          </ion-card-content>
+          <ion-card-content>
+            Abilities: .
+          </ion-card-content>
+        </ion-card>
       </ion-item>
     </ion-list>
     <ion-infinite-scroll @ionInfinite="ionInfinite">
@@ -15,7 +24,7 @@
 </template>
 
 <script>
-import { IonContent, IonInfiniteScroll, IonInfiniteScrollContent, IonList, IonItem, IonAvatar, IonLabel } from '@ionic/vue';
+import { IonContent, IonInfiniteScroll, IonInfiniteScrollContent, IonList, IonItem, IonAvatar, IonLabel, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle } from '@ionic/vue';
 
 export default {
   components: {
@@ -26,6 +35,7 @@ export default {
     IonItem,
     IonAvatar,
     IonLabel,
+    IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle
   },
   data() {
     return {
@@ -47,7 +57,7 @@ export default {
         });
 
         const pokemonDetails = await Promise.all(pokemonDetailsPromises);
-        // console.log('details', pokemonDetails)
+        console.log('details', pokemonDetails)
 
         // para obtener un orden aleatorio de los pokemons
         const shuffledPokemonDetails = pokemonDetails.sort(() => Math.random() - 0.5);
