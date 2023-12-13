@@ -1,6 +1,11 @@
 <template>
-  <ion-content>
+  <ion-content class="ion-padding">
+    <ion-refresher slot="fixed" @ionRefresh="this.handleRefresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+
     <ion-title>PokeAustral app</ion-title>
+
     <ion-list class="content">
       <ion-item v-for="(pokemon, index) in pokemons" :key="index">
         <ion-avatar slot="start">
@@ -21,6 +26,7 @@
         </ion-card>
       </ion-item>
     </ion-list>
+
     <ion-infinite-scroll @ionInfinite="ionInfinite">
       <ion-infinite-scroll-content></ion-infinite-scroll-content>
     </ion-infinite-scroll>
@@ -28,7 +34,7 @@
 </template>
 
 <script>
-import { IonContent, IonInfiniteScroll, IonInfiniteScrollContent, IonList, IonItem, IonAvatar, IonLabel, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle } from '@ionic/vue';
+import { IonContent, IonInfiniteScroll, IonInfiniteScrollContent, IonList, IonItem, IonAvatar, IonLabel, IonTitle, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonRefresher, IonRefresherContent } from '@ionic/vue';
 
 export default {
   components: {
@@ -39,7 +45,9 @@ export default {
     IonItem,
     IonAvatar,
     IonLabel,
-    IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle
+    IonTitle,
+    IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle,
+    IonRefresher, IonRefresherContent
   },
   data() {
     return {
@@ -88,6 +96,14 @@ export default {
     ionInfinite(ev) {
       this.fetchPokemons();
       setTimeout(() => ev.target.complete(), 500);
+    },
+    handleRefresh(ev) {
+      this.offset = 0;
+      this.pokemons = [];
+      this.fetchPokemons();
+      setTimeout(() => {
+        ev.target.complete();
+      }, 2000);
     },
   },
   mounted() {
