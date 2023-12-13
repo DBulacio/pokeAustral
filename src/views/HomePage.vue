@@ -1,11 +1,11 @@
 <template>
   <ion-content>
     <ion-list>
-      <ion-item v-for="(item, index) in items" :key="index">
+      <ion-item v-for="(pokemon, index) in pokemons" :key="index">
         <ion-avatar slot="start">
           <img :src="'https://picsum.photos/80/80?random=' + index" alt="avatar" />
         </ion-avatar>
-        <ion-label>{{ item }}</ion-label>
+        <ion-label>{{ pokemon.name }}</ion-label>
       </ion-item>
     </ion-list>
     <ion-infinite-scroll @ionInfinite="ionInfinite">
@@ -15,19 +15,9 @@
 </template>
 
 <script>
-import {
-  IonContent,
-  IonInfiniteScroll,
-  IonInfiniteScrollContent,
-  IonList,
-  IonItem,
-  IonAvatar,
-  IonImg,
-  IonLabel,
-} from '@ionic/vue';
-import { defineComponent, ref } from 'vue';
+import { IonContent, IonInfiniteScroll, IonInfiniteScrollContent, IonList, IonItem, IonAvatar, IonLabel } from '@ionic/vue';
 
-export default defineComponent({
+export default {
   components: {
     IonContent,
     IonInfiniteScroll,
@@ -35,27 +25,43 @@ export default defineComponent({
     IonList,
     IonItem,
     IonAvatar,
-    IonImg,
     IonLabel,
   },
-  setup() {
-    const items = ref([]);
-
-    const generateItems = () => {
-      const count = items.value.length + 1;
-      for (let i = 0; i < 50; i++) {
-        items.value.push(`Item ${count + i}`);
-      }
+  data() {
+    return {
+      pokemons: [],
     };
-
-    const ionInfinite = (ev) => {
-      generateItems();
-      setTimeout(() => ev.target.complete(), 500);
-    };
-
-    generateItems();
-
-    return { ionInfinite, items };
   },
-});
+  methods: {
+    async fetchPokemons() {
+      try {
+        const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=50');
+        const data = await response.json();
+        // console.log('data', data)
+        // data solo tiene el nombre del pokemon y la url a la api con su id, tengo que fetchear también esa data.
+
+        const pokemonDetailsPromises = data.results.map(async (result) => {
+          const pokemonResponse = await fetch(result.url);
+          return await pokemonResponse.json();
+        });
+
+        const pokemonDetails = await Promise.all(pokemonDetailsPromises);
+        // console.log('details', pokemonDetails)
+        // randomizar orden de los pokemons
+        const shuffledPokemonDetails = pokemonDetails.sort(() => Math.random() - 0.7);
+
+        this.pokemons = shuffledPokemonDetails;
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    },
+    ionInfinite(ev) {
+      this.fetchPokemons();
+      setTimeout(() => ev.target.complete(), 500);
+    },
+  },
+  mounted() {
+    this.fetchPokemons();
+  },
+};
 </script>
